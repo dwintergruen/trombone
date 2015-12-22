@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -101,14 +102,27 @@ public class Keywords {
 			}
 			else if (ref.startsWith(STOPWORDS_FILE_PREFIX)) {
 				URI uri;
-				try {
-					uri = this.getClass().getResource("/org/voyanttools/trombone/keywords").toURI();
-				} catch (URISyntaxException e) {
-					throw new IOException("Unable to find local stopwords directory", e);
-				}
-				File dir = new File(uri.getPath());
-				File file = new File(dir, ref);
-				List<String> refs = FileUtils.readLines(file);
+				InputStream inputstream;
+				// Original version gives a null pointer exception, therefore I changed getRessource to getResourceAsStream
+				inputstream = this.getClass().getResourceAsStream("/org/voyanttools/trombone/keywords/"+ref);
+				//try {
+					//uri = this.getClass().getResource("/org/voyanttools/trombone/keywords").toURI();
+					
+				//} catch (URISyntaxException e) {
+				//	throw new IOException("Unable to find local stopwords directory", e);
+				//}
+				//File dir = new File(uri.getPath());
+				//File file = new File(dir, ref);
+				
+				//File file = new File(uri.getPath());
+				String resString = IOUtils.toString(inputstream, "utf-8"); 
+				
+				List<String> refs = Arrays.asList(resString.split("\n"));
+				
+				//List<String> refs = FileUtils.readLines(file);
+				
+				
+				
 				add(refs);
 			}
 			else if (ref.startsWith(KEYWORDS_PREFIX)) {
